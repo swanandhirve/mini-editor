@@ -2,7 +2,9 @@ const { app, BrowserWindow,
     ipcMain, dialog
  } = require('electron');
 const path = require('path');
-const fs =  require('fs/promises');
+const fs =  require('node:fs');
+
+let currentFilePath = null;
 
 const createWindow = () => {
     const webWin = new BrowserWindow({
@@ -45,5 +47,62 @@ ipcMain.handle('open-file', async () => {
     if (canceled)
         return null;
 
-    return await fs.readFile(filePaths[0], 'utf-8');
+    let text = await fs.readFileSync(filePaths[0], 'utf-8');
+    currentFilePath = filePaths[0]
+    return text;
+});
+
+ipcMain.handle('save-file', async (event, info) => {
+    if (!currentFilePath) 
+        return false;
+
+    let text = info.text;
+    try {
+        await fs.writeFileSync(currentFilePath, text, 'utf-8');
+
+        return true;
+    } catch (error) {
+        console.log(error);
+
+        return false;
+    }
+});
+
+ipcMain.handle('save-as-file', async (event, info) => {
+    if (!currentFilePath) 
+        return false;
+    
+    let text = info.text;
+    let { canceled, filePath } = await dialog.showSaveDialog({
+        defaultPath: currentFilePath,
+        title: 'Save Your Document',
+        filters: [
+            { 
+                'name': 'Text Files', 
+                'extensions': [
+                    'txt',
+                    'md',
+                    'js',
+                    'json'
+                ] 
+            },
+            { 
+                name: 'All Files', 
+                extensions: ['*'] 
+            }
+        ]
+    })
+
+    if (canceled)
+        return;
+
+    try {
+        await fs.writeFileSync(filePath, text, 'utf-8');
+        currentFilePath = filePath;
+        return true;
+    } catch (error) {
+        console.log(error);
+
+        return false;
+    }
 });
