@@ -3,7 +3,62 @@
     padding: 0;
 }
 
+html {
+    height: fit-content;
+}
+
 body {
     background-color: #191818;
     color: #fff;
+    margin: 0;
+    height: 100vh;
+}
+
+.toolbar {
+    display: flex;
+    height: 80px;
+
+    background-color: #293134;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar button {
+    height: 40px;
+    min-width: 80px;
+    max-width: max-content;
+    background-color: rgb(222, 89, 41);
+    border-radius: 5px;
+    border: none;
+    color: rgb(215, 215, 215);
+}
+
+.toolbar button:hover {
+    background-color: rgb(255, 47, 0);
+}
+
+.textArea {
+    height: 100%;
+    width: 100%;
+}
+
+#editor {
+    width: 100%;
+    height: calc(100% - 80px);
+    
+    /* 3. CRITICAL: Includes padding/borders inside the 100% calculation */
+    box-sizing: border-box; 
+    
+    /* Optional styling tweaks for a clean look */
+    border: none;
+    padding: 20px;
+    font-family: sans-serif;
+    font-size: 16px;
+    resize: none; /* Disables the manual drag-to-resize handle */
+    background: #1F1F1F;
+    color: #fff;
+}
+
+textarea:focus-visible {
+    outline: none;
 }
